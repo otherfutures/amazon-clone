@@ -54,13 +54,16 @@ products.forEach((product) => {
     `;
 });
 
+// Renders products in grid format
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 
+// Add to cart button
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
     button.addEventListener('click', () => {
         const productId = button.dataset.productId;
-        const selectedQuantity = parseInt(document.querySelector(`.js-product-quantity[data-product-id="${productId}"]`).value);
-
+        const selectedQuantity = parseInt(
+            document.querySelector(
+                `.js-product-quantity[data-product-id="${productId}"]`).value);
 
         let matchingItem;
 
