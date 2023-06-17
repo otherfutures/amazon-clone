@@ -31,7 +31,7 @@
       </div>
 
       <div class="checkout-header-middle-section">
-        Checkout (<a class="return-to-home-link" href="index.html">3 items</a>)
+        Checkout (<a class="return-to-home-link" href="index.html"><span class="js-cart-quantity">3</span> items</a>)
       </div>
 
       <div class="checkout-header-right-section">
@@ -43,8 +43,8 @@
   <div class="main">
     <div class="page-title">Review your order</div>
 
-    <div class="checkout-grid js-checkout-grid">
-      <div class="order-summary">
+    <div class="checkout-grid">
+      <div class="order-summary js-order-summary">
         <div class="cart-item-container">
           <div class="delivery-date">
             Delivery date: Tuesday, June 21
@@ -64,10 +64,10 @@
                 <span>
                   Quantity: <span class="quantity-label">2</span>
                 </span>
-                <span class="update-quantity-link link-primary">
+                <span class="update-quantity-link link-primary js-update-quantity">
                   Update
                 </span>
-                <span class="delete-quantity-link link-primary">
+                <span class="delete-quantity-link link-primary js-delete-quantity">
                   Delete
                 </span>
               </div>
@@ -191,7 +191,7 @@
         </div>
 
         <div class="payment-summary-row">
-          <div>Items (3):</div>
+          <div>Items (<span class="js-cart-quantity">3</span>):</div>
           <div class="payment-summary-money">$42.75</div>
         </div>
 
@@ -215,13 +215,15 @@
           <div class="payment-summary-money">$52.51</div>
         </div>
 
-        <button class="place-order-button button-primary">
+        <button class="place-order-button button-primary js-place-order-button">
           Place your order
         </button>
       </div>
     </div>
   </div>
-  <script src="checkout.js"></script>
+  <script src="data/date.js"></script>
+  <script src="data/cart.js"></script>
+  <script src="scripts/checkout.js"></script>
 </body>
 
 </html>
