@@ -27,6 +27,3 @@ const formattedPriorityDate = priorityDate.toLocaleDateString('en-US', options);
 const formattedRegularDate = regularDate.toLocaleDateString('en-US', options);
 const formattedFreeDate = freeDate.toLocaleDateString('en-US', options);
 
-console.log(formattedPriorityDate);
-console.log(formattedRegularDate);
-console.log(formattedFreeDate); 

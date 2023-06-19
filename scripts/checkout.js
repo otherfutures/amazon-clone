@@ -1,152 +1,233 @@
-let itemsTotal = '';
-let cartItems = '';
-console.log(cart);
-cartItems.forEach(item => {
-    cartItems += `
-        <div class="cart-item-container">
-        <div class="delivery-date">
-        Delivery date: Tuesday, June 21
-        </div>
+// Payment Summary
+function paymentSummary(cart) {
+    let productSum = 0;
+    let paySum = 0;
+    let shippingSum = 0;
+    let grossSum = 0;
+    let tax = 0;
+    const taxRate = 10; // Percent (e.g. 10%)
+    let netSum = 0;
 
-        <div class="cart-item-details-grid">
-        <img class="product-image" src="${product.image}">
+    cart.forEach(product => {
+        const selectedOption = document.querySelector(`input[name="delivery-option-${product.productId}"]:checked`);
+        const shippingRate = selectedOption ? parseInt(selectedOption.dataset.shipping) : 0;
 
-        <div class="cart-item-details">
-            <div class="product-name">
-                ${product.name}
-            </div>
-            <div class="product-price">
-                $${(product.priceCents / 100).toFixed(2)}
-            </div>
-            <div class="product-quantity">
-            <span>
-                Quantity: <span class="quantity-label">${cartQuantity}</span>
-            </span>
-            <span class="update-quantity-link link-primary">
-                Update
-            </span>
-            <span class="delete-quantity-link link-primary">
-                Delete
-            </span>
-            </div>
-        </div>
+        productSum = product.price * product.quantity * 100; // Convert to cents: avoid float pt. maths
+        paySum += productSum;
 
-        <div class="delivery-options">
-            <div class="delivery-options-title">
-            Choose a delivery option:
-            </div>
-            <div class="delivery-option">
-            <input type="radio" checked class="delivery-option-input" name="delivery-option-1">
-            <div>
-                <div class="delivery-option-date">
-                Tuesday, June 21
-                </div>
-                <div class="delivery-option-price">
-                FREE Shipping
-                </div>
-            </div>
-            </div>
-            <div class="delivery-option">
-            <input type="radio" class="delivery-option-input" name="delivery-option-1">
-            <div>
-                <div class="delivery-option-date">
-                Wednesday, June 15
-                </div>
-                <div class="delivery-option-price">
-                $4.99 - Shipping
-                </div>
-            </div>
-            </div>
-            <div class="delivery-option">
-            <input type="radio" class="delivery-option-input" name="delivery-option-1">
-            <div>
-                <div class="delivery-option-date">
-                Monday, June 13
-                </div>
-                <div class="delivery-option-price">
-                $9.99 - Shipping
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-    `;
-});
+        shippingSum += shippingRate;
+    });
 
-itemsTotal.forEach(item => {
-    itemsTotal += `
+    grossSum = (paySum + shippingSum) / 100;
+    tax = (grossSum * taxRate) / 100;
+    netSum = grossSum + tax;
+
+    const finalPaySum = (paySum / 100).toFixed(2);
+    const finalShippingSum = (shippingSum / 100).toFixed(2);
+    const finalGrossSum = grossSum.toFixed(2);
+    const finalTax = tax.toFixed(2);
+    const finalNetSum = netSum.toFixed(2);
+
+    const paymentHtml = `
         <div class="payment-summary-title">
-        Order Summary
+          Order Summary
         </div>
 
         <div class="payment-summary-row">
-        <div>Items ${cartQuantity}:</div>
-        <div class="payment-summary-money">$${itemsTotal}</div>
+          <div>Items (<span class="js-cart-quantity">${cartQuantity}</span>):</div>
+          <div class="payment-summary-money">$${finalPaySum}</div>
         </div>
 
         <div class="payment-summary-row">
-        <div>Shipping &amp; handling:</div>
-        <div class="payment-summary-money">$4.99</div>
+          <div>Shipping &amp; handling:</div>
+          <div class="payment-summary-money">$${finalShippingSum}</div>
         </div>
 
         <div class="payment-summary-row subtotal-row">
-        <div>Total before tax:</div>
-        <div class="payment-summary-money">$47.74</div>
+          <div>Total before tax:</div>
+          <div class="payment-summary-money">$${finalGrossSum}</div>
         </div>
 
         <div class="payment-summary-row">
-        <div>Estimated tax (10%):</div>
-        <div class="payment-summary-money">$4.77</div>
+          <div>Estimated tax (${taxRate}%):</div>
+          <div class="payment-summary-money">$${finalTax}</div>
         </div>
 
         <div class="payment-summary-row total-row">
-        <div>Order total:</div>
-        <div class="payment-summary-money">$52.51</div>
+          <div>Order total:</div>
+          <div class="payment-summary-money">$${finalNetSum}</div>
         </div>
-
-        <button class="place-order-button button-primary">
-        Place your order
-        </button>
+        
+        <a href="index.html">
+          <button class="place-order-button button-primary js-place-order-button">
+            Place your order
+          </button>
+        </a>
     `;
+
+    // Render Payment Summary Box
+    document.querySelector('.js-payment-summary').innerHTML = paymentHtml;
+};
+
+function renderCart(cart, deliveryDate = formattedFreeDate) {
+    let cartHtml = '';
+
+    cart.forEach(product => {
+        cartHtml += `
+        <div class="cart-item-container">
+            <div class="delivery-date">
+                Delivery date: ${deliveryDate}
+            </div>
+
+            <div class="cart-item-details-grid">
+                <img class="product-image" src="${product.image}">
+
+                <div class="cart-item-details">
+                <div class="product-name">
+                    ${product.name}
+                </div>
+                <div class="product-price">
+                    $${product.price}
+                </div>
+                <div class="product-quantity">
+                    <span>
+                    Quantity: 
+                        <div class="product-quantity-container">
+                        <select class="quantity-label">
+                        // Ternary operator (i.e. if-statement shorthand)
+                            <option ${product.quantity === 1 ? 'selected' : ''} value="1">1</option>
+                            <option ${product.quantity === 2 ? 'selected' : ''} value="2">2</option>
+                            <option ${product.quantity === 3 ? 'selected' : ''} value="3">3</option>
+                            <option ${product.quantity === 4 ? 'selected' : ''} value="4">4</option>
+                            <option ${product.quantity === 5 ? 'selected' : ''} value="5">5</option>
+                            <option ${product.quantity === 6 ? 'selected' : ''} value="6">6</option>
+                            <option ${product.quantity === 7 ? 'selected' : ''} value="7">7</option>
+                            <option ${product.quantity === 8 ? 'selected' : ''} value="8">8</option>
+                            <option ${product.quantity === 9 ? 'selected' : ''} value="9">9</option>
+                            <option ${product.quantity === 10 ? 'selected' : ''} value="10">10</option>
+                        </select>
+                        </div>
+                    </span>
+                    <span class="update-quantity-link link-primary js-update-quantity">
+                    Update
+                    </span>
+                    <span class="delete-quantity-link link-primary js-delete-quantity">
+                    Delete
+                    </span>
+                </div>
+                </div>
+
+        <div class="delivery-options">
+            <div class="delivery-options-title">
+                Choose a delivery option:
+            </div>
+        <div class="delivery-option">
+            <input type="radio" checked class="delivery-option-input js-delivery-option-input" 
+                name="delivery-option-${product.productId}" 
+                data-shipping="0"
+                data-delivery="${formattedFreeDate}">
+            <div>
+            <div class="delivery-option-date js-delivery-option-date">
+                ${formattedFreeDate} 
+            </div>
+            <div class="delivery-option-price">
+                FREE Shipping
+            </div>
+            </div>
+        </div>
+        <div class="delivery-option">
+        <input type="radio" class="delivery-option-input js-delivery-option-input" 
+            name="delivery-option-${product.productId}" 
+            data-shipping="499"
+            data-delivery="${formattedRegularDate}">
+        <div>
+        <div class="delivery-option-date js-delivery-option-date">
+            ${formattedRegularDate} 
+        </div>
+        <div class="delivery-option-price">
+            $4.99 - Shipping
+        </div>
+        </div>
+        </div>
+        <div class="delivery-option">
+            <input type="radio" class="delivery-option-input js-delivery-option-input" 
+                name="delivery-option-${product.productId}" 
+                data-shipping="999" 
+                data-delivery="${formattedPriorityDate}">
+            <div>
+            <div class="delivery-option-date js-delivery-option-date">
+                ${formattedPriorityDate} 
+            </div>
+            <div class="delivery-option-price">
+                $9.99 - Shipping
+            </div>
+            </div>
+        </div>
+        </div>
+            </div>
+        </div>
+    `;
+    });
+
+    // Renders cart inside HTML grid
+    document.querySelector('.js-order-summary').innerHTML = cartHtml;
+};
+
+
+renderCart(cart);
+paymentSummary(cart);
+
+// Add event listeners to the radio buttons
+(document.querySelectorAll('.js-delivery-option-input')).forEach(input => {
+    input.addEventListener('change', function () {
+        cart.forEach(product => {
+            const selectedOption = document.querySelector(`input[name="delivery-option-${product.productId}"]:checked`);
+            const deliveryDate = selectedOption.dataset.delivery
+            console.log(deliveryDate);
+            paymentSummary(cart);
+            //renderDeliveryDate(deliveryDate);
+        });
+    });
 });
 
-document.querySelector('.js-order-summary').innerHTML = cartItems;
-document.querySelector('.js-payment-summary').innerHTML = itemsTotal;
+// Update link
+// const updateQuantityLinks = document.querySelectorAll('.js-update-quantity');
+
+// updateQuantityLinks.forEach(link => {
+//     link.addEventListener('click', function (event) {
+//         // Add your code here to handle the click event
+//         renderCart(cart);
+//         paymentSummary(cart);
+//         console.log('Update link clicked');
+//     });
+// });
+
 
 // Delete link
-document.querySelectorAll('.js-delete-quantity').forEach((button) => {
-    button.addEventListener('click', () => {
+// (document.querySelectorAll('.js-delete-quantity')).forEach(link => {
+//     link.addEventListener('click', function (event) {
+//         const productIdToDelete = link.parentNode.parentNode.dataset.productId;
 
-        // Get the item associated with the clicked button
-        const item = button.getAttribute('productID');
-        const index = cart.indexOf(item);
+//         // Filtering the array to exclude the item with the matching productId
+//         cart = cart.filter(product => product.productId !== productIdToDelete);
 
-        if (index !== -1) {
-            cart.splice(index, 1); // Remove the item from its current position
-            cart.push(item); // Add the item to the last position
-        }
+//         // Add your code here to handle the click event
+//         renderCart(cart);
+//         paymentSummary(cart);
+//         console.log('Delete link clicked');
+//     });
+// });
 
-        const lastItem = cart.pop(); // Remove and get the last item
-        console.log(lastItem);
-    });
-});
-
-let placedOrder = [];
 
 // Place your order button
-document.querySelectorAll('.js-place-order-button').forEach((button) => {
-    button.addEventListener('click', () => {
-        // Move all items from cart to placedOrder & empty the cart
-        placedOrder = cart;
-        cart.length = 0;
-    });
+let placedOrder = [];
+document.querySelector('.js-place-order-button').addEventListener('click', () => {
+    // Move all items from cart to placedOrder & empty the cart
+    placedOrder = cart;
+    cart = [];
+
+    localStorage.setItem('cart', JSON.stringify(cart)); // Update local storage
+
+    console.log(placedOrder);
+    console.log(cart);
 });
-
-
-// Example usage
-const array = [1, 2, 3, 4, 5];
-const itemToMove = 3;
-
-const poppedItem = moveItemToLastAndPop(array, itemToMove);
-console.log(poppedItem);    // Output: 3
-console.log(array);         // Output: [1, 2, 4, 5, 3]

@@ -1,6 +1,6 @@
 let productsHTML = '';
 
-products.forEach((product) => {
+products.forEach(product => {
     productsHTML += `
         <div class="product-container">
         <div class="product-image-container">
@@ -47,7 +47,10 @@ products.forEach((product) => {
         </div>
 
         <button class="add-to-cart-button button-primary js-add-to-cart"
-        data-product-id="${product.id}">
+        data-product-id="${product.id}"
+        data-product-name="${product.name}"
+        data-product-image="${product.image}"
+        data-product-price="${(product.priceCents / 100).toFixed(2)}">
         Add to Cart
         </button>
       </div> 
@@ -58,27 +61,37 @@ products.forEach((product) => {
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 
 // Add to cart button
-document.querySelectorAll('.js-add-to-cart').forEach((button) => {
+document.querySelectorAll('.js-add-to-cart').forEach(button => {
     button.addEventListener('click', () => {
         const productId = button.dataset.productId;
+        const productName = button.dataset.productName;
+        const productImage = button.dataset.productImage;
+        const productPrice = button.dataset.productPrice;
+
         let matchingItem;
 
+        // Check for pre-exist. duplicate items
         cart.forEach((item) => {
             if (productId === item.productId) {
                 matchingItem = item;
             }
         });
 
+        // Drop down selection; multi. units of product    
         const quantitySelector = document.querySelector(
             `.js-product-quantity-${productId}`
         );
         const quantity = Number(quantitySelector.value);
 
+        // If item already in cart, add quantity; else add item w/ obj. values
         if (matchingItem) {
             matchingItem.quantity += quantity;
         } else {
             cart.push({
                 productId: productId,
+                name: productName,
+                image: productImage,
+                price: productPrice,
                 quantity: quantity
             });
         }
@@ -91,5 +104,7 @@ document.querySelectorAll('.js-add-to-cart').forEach((button) => {
 
         document.querySelector('.js-cart-quantity').innerHTML = cartQuantity;
         localStorage.setItem('cart', JSON.stringify(cart));
+        console.log(cart);
     });
 });
+
