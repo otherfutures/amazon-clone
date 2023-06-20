@@ -63,10 +63,11 @@ document.querySelector('.js-products-grid').innerHTML = productsHTML;
 // Add to cart button
 document.querySelectorAll('.js-add-to-cart').forEach(button => {
     button.addEventListener('click', () => {
-        const productId = button.dataset.productId;
-        const productName = button.dataset.productName;
-        const productImage = button.dataset.productImage;
-        const productPrice = button.dataset.productPrice;
+        // Destruct. shortcut for dataset var. (usually e.g. button.dataset.productID)
+        const { productId } = button.dataset;
+        const { productName } = button.dataset;
+        const { productImage } = button.dataset;
+        const { productPrice } = button.dataset;
 
         let matchingItem;
 
@@ -88,11 +89,11 @@ document.querySelectorAll('.js-add-to-cart').forEach(button => {
             matchingItem.quantity += quantity;
         } else {
             cart.push({
-                productId: productId,
+                productId, // Shorthand property
                 name: productName,
                 image: productImage,
                 price: productPrice,
-                quantity: quantity
+                quantity
             });
         }
 

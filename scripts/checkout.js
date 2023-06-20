@@ -173,7 +173,6 @@ function renderCart(cart, deliveryDate = formattedFreeDate) {
     document.querySelector('.js-order-summary').innerHTML = cartHtml;
 };
 
-
 renderCart(cart);
 paymentSummary(cart);
 
